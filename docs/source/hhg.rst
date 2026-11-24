@@ -43,7 +43,7 @@ Setting up a run
   main :code:`nt`, with the same parity, and divisible by the number of MPI ranks.
 * **Radial grid.**  The HHG :code:`rmax` only needs to cover the region where harmonics are
   generated and propagate, so it is usually much smaller than the main :code:`rmax`, and
-  :code:`nr` much smaller than the main :code:`nx(2)`.  Check that the harmonic beam does not
+  :code:`nr` much smaller than the main :code:`nr`.  Check that the harmonic beam does not
   reach the HHG edge filter: if the yields change when :code:`rmax` or the edge filter
   changes, the HHG grid is too narrow.
 * **Step.**  :code:`nz_mult` sub-steps are taken per main step.  The filter cadences

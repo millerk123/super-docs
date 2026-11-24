@@ -6,7 +6,7 @@
 Welcome to SUPER's documentation!
 =================================
 
-**SUPER** (**S**\ imulation of the **U**\ nidirectional pulse **P**\ ropagation **E**\ quation at **R**\ ochester) is a software package built in Fortran for simulating the Unidirectional Pulse Propagation Equation (UPPE) [1]_\ --[3]_.  This code was adapted to Fortran by Kyle G. Miller from MATLAB code written by John P. Palastro.
+**SUPER** (**S**\ imulation of the **U**\ nidirectional pulse **P**\ ropagation **E**\ quation at **R**\ ochester) is a software package built in Fortran for simulating the Unidirectional Pulse Propagation Equation (UPPE) [1]_, [2]_, [3]_.  This code was adapted to Fortran by Kyle G. Miller from MATLAB code written by John P. Palastro.
 
 :ref:`Search the documentation <search>`
 

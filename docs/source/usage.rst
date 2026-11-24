@@ -68,7 +68,7 @@ Choosing the decomposition
 **************************
 
 The time grid is split across the MPI ranks, and the radial grid during transposes, so
-:code:`nt` and :code:`nx(2)` (and the HHG :code:`nt` and :code:`nr`) must be divisible by
+:code:`nt` and :code:`nr` (in 3D, :code:`nx` and :code:`ny`; and the HHG :code:`nt` and :code:`nr`) must be divisible by
 :code:`node_number`.  Each step does FFTs along :math:`t` and dense matrix products for the
 Hankel transform along :math:`r`, whose cost grows as :math:`n_r^2 n_t`; for large radial grids
 the Hankel transform dominates.

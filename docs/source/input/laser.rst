@@ -39,12 +39,12 @@ This documentation is for the section :code:`laser` in the main :doc:`input file
 	* :code:`tpulse`, real, **required parameter**
 	* :code:`tpow`, integer, default = 2
 
-	Additional quantities specific to pulses of :code:`type` "ideal flying focus" and "axi-echelon flying focus":
+	Additional quantities specific to pulses of :code:`type` "ideal flying focus" and "axi-echelon flying focus" (both 2D only for now):
 
 	* :code:`rmaxf_lens`, real, default = 1.5
 	* :code:`vI`, real, default = 1.0
 	* :code:`f0`, real, default = 8.0
-	* :code:`nr_lens`, integer, **required parameter**
+	* :code:`nr_lens`, integer, **required parameter** (2D)
 
 	Additional quantities specific to pulses of :code:`type` "axi-echelon flying focus":
 
@@ -142,7 +142,7 @@ Standard Pulse
 
 The standard pulse is selected by setting :code:`type` to "standard" or "std".  This type of pulse is initialized completely in the far field.  A Gaussian pulse first is initialized at focus, where the temporal profile can have a custom power :code:`tpow` to make a super-Gaussain profile.  The pulse is then transformed to :math:`\omega`--:math:`k` space and propagated to the beginning of the simulation assuming vacuum propagation.  The available parameters for the standard pulse type are listed below.
 
-:code:`ell` --- Angular momentum of the pulse.  Currently only 0 is supported.
+:code:`ell` --- Orbital angular momentum of the pulse.  Only 0 is allowed in 2D; in 3D other values are accepted but not yet used.
 
 :code:`lambda0` --- Central wavelength of the pulse.
 
@@ -166,7 +166,7 @@ The standard pulse is selected by setting :code:`type` to "standard" or "std".  
 Ideal Flying-Focus Pulse
 ************************
 
-The ideal flying-focus pulse is selected by setting :code:`type` to "ideal flying focus" or "ff".  More information about the ideal flying focus can be found in Ref. [1]_.  In addition to all the parameters available for a :ref:`standard pulse <sec-standard-pulse>`, the parameters below are also available.
+The ideal flying-focus pulse is selected by setting :code:`type` to "ideal flying focus" or "ff".  It is only available in 2D.  More information about the ideal flying focus can be found in Ref. [1]_.  In addition to all the parameters available for a :ref:`standard pulse <sec-standard-pulse>`, the parameters below are also available.
 
 :code:`rmaxf_lens` --- The factor that multiplies the laser :math:`w_0` at the lens plane to determine :math:`r_\mathrm{max}` for the lens plane.  The ideal flying focus uses a field profile proportional to :math:`\exp(-[r/w_0]^2)` in the lens plane, where :math:`w_0` is calculated appropriately based on :code:`wf` and :code:`f0`.  It is therefore recommended that :code:`rmaxf_lens` be large enough to include several spot sizes at the lens, i.e., 3 or greater.
 
@@ -181,7 +181,7 @@ The ideal flying-focus pulse is selected by setting :code:`type` to "ideal flyin
 Axiparabola--Echelon Pulse
 **************************
 
-The axiparabola--echelon pulse is selected by setting :code:`type` to "axi-echelon flying focus" or "ae".  More information about the axiparabola--echelon flying-focus pulse can be found in Ref. [2]_.  In addition to all the parameters available for a :ref:`standard pulse <sec-standard-pulse>`, the parameters below are also available.  Note that some of these parameters overlap with those available for an :ref:`ideal flying-focus pulse <sec-ideal-ff-pulse>`; they are duplicated here for clarity.
+The axiparabola--echelon pulse is selected by setting :code:`type` to "axi-echelon flying focus" or "ae".  It is only available in 2D.  More information about the axiparabola--echelon flying-focus pulse can be found in Ref. [2]_.  In addition to all the parameters available for a :ref:`standard pulse <sec-standard-pulse>`, the parameters below are also available.  Note that some of these parameters overlap with those available for an :ref:`ideal flying-focus pulse <sec-ideal-ff-pulse>`; they are duplicated here for clarity.
 
 :code:`rmaxf_lens` --- The factor that multiplies the laser :math:`w_0` at the lens plane to determine :math:`r_\mathrm{max}` for the lens plane.  The axiparabola--echelon flying focus uses a field profile proportional to :math:`\exp(-[r/w_0]^{16})` in the lens plane, where :math:`w_0` is calculated appropriately based on :code:`wf` and :code:`f0`.  The value of :code:`rmaxf_lens` can therefore be smaller than for the :ref:`ideal flying-focus pulse <sec-ideal-ff-pulse>`, i.e., around 1.3.
 
