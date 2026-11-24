@@ -32,8 +32,14 @@ your system.  Then run
 
    make
 
-which creates :code:`super.e` (objects go in :code:`build/`).  After changing a derived type or
-a module interface, run :code:`make clean` first so that no stale :code:`.mod` files are used.
+which compiles the Fortran sources in :code:`src/` and creates :code:`super.e` (objects go in
+:code:`build/`).  :code:`make -j N` builds in
+parallel.  The module dependencies between the source files are found automatically by
+:code:`tools/fortran_deps.py` (written to :code:`build/deps.mk`), so after editing a derived type
+or a module interface a plain :code:`make` recompiles every file that uses it; :code:`make clean`
+is not needed.  Files whose module did not change (e.g. only a routine body was edited) are not
+recompiled.  Editing the :code:`Makefile` (e.g. compiler flags) recompiles everything.  The
+dependency scan needs Python 3 (:code:`make PYTHON=/path/to/python` to choose one).
 
 json-fortran is a shared library, so it must be on the library path at run time:
 
