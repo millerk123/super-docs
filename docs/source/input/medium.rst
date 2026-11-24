@@ -13,6 +13,8 @@ This documentation is for the section :code:`medium` in the main :doc:`input fil
 
 * "hydrogen" -- Hydrogen gas has 2 atoms per molecule, an ionization potential of 13.6 eV, and a nonlinear index of refraction of 7.5e-24 :math:`\mathrm{m}^2/\mathrm{W}`.
 * "helium" -- Helium gas has 1 atom per molecule, an ionization potential of 24.6 eV, and a nonlinear index of refraction of 3.6e-25 :math:`\mathrm{m}^2/\mathrm{W}`.
-* "argon" -- Argon gas has 1 atom per molecule, an ionization potential of 15.8 eV, and a nonlinear index of refraction of 1.01e-23 :math:`\mathrm{m}^2/\mathrm{W}`.  Note that this gas cannot be used with high-harmonic generation.
+* "argon" -- Argon gas has 1 atom per molecule, an ionization potential of 15.8 eV, and a nonlinear index of refraction of 1.01e-23 :math:`\mathrm{m}^2/\mathrm{W}`.
 
-:code:`nu_ei` --- The electron--ion collision frequency in units of :math:`\mathrm{s}^{-1}`.
+:code:`nu_ei` --- The electron--ion collision frequency in units of :math:`\mathrm{s}^{-1}`.  It sets the collisional absorption of the plasma current (see :doc:`../uppe`).
+
+The linear refractive index of each gas comes from a Sellmeier formula (or, when HHG is on, from tabulated atomic data that also cover the XUV), scaled with the density.  The nonlinear index :math:`n_2` listed above is for 1 atm and is also scaled with the density.

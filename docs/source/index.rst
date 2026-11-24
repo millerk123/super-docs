@@ -58,6 +58,7 @@ Table of Contents
    input-file
    hhg
    output
+   testing
 
 References
 ----------
