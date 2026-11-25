@@ -53,6 +53,9 @@ The tests are:
   the gas dispersion.
 * :code:`test_ionization.py` --- field ionization of argon: energy balance between the field
   and the electrons, bounds on the electron density, and plasma defocusing.
+* :code:`test_hhg_plasma.py` --- plasma dispersion of the harmonic field on the HHG grid: the
+  3rd-harmonic phase-mismatch rate with and without ionization, compared with the driver's
+  measured plasma phase, isolates the harmonic's own plasma shift (:math:`k_p/3`).
 
 Updating the reference values
 -----------------------------
