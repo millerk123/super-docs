@@ -43,7 +43,8 @@ The sources are computed in real space (:math:`r, t`) and transformed:
   (defocusing, blue shifting) and collisional absorption (:code:`nu_ei`).
 * **Ionization loss** (:code:`ionization`): an extra current
   :math:`J_\mathrm{loss} = I_p\,(\partial_t n_e)\,\mathcal{E}/\mathcal{E}^2` removes the
-  ionization energy :math:`I_p` for every electron created.
+  ionization energy :math:`I_p` for every electron created.  It is applied as a damping of
+  the physical field after each step with the same strength; see :doc:`input/laser`.
 
 The electron density :math:`n_e(r, t)` is obtained at every step by integrating a
 cycle-resolved tunneling (ADK-type) rate :math:`W(|\mathcal{E}|)` in time,
@@ -71,6 +72,22 @@ After the corrector, the spectral filters and then the real-space edge filters a
 the steps set by :code:`nz_filt_omega` and :code:`nz_filt_t`, followed by the ionization loss
 (see :ref:`Filters <sec-filters>`).
 
+With :code:`solver` = "rk4" the step is the integrating-factor (Lawson) 4th-order Runge--Kutta
+method instead.  With :math:`e_2 = e^{i k_L \Delta z / 2}` and :math:`S_k` the sources
+(times :math:`\Delta z`) at the stage fields,
+
+.. math::
+
+   \hat E_1 &= e_2\,(\hat E + S_0/2), \qquad
+   \hat E_2 = e_2\,\hat E + S_1/2, \qquad
+   \hat E_3 = e\,\hat E + e_2\,S_2, \\
+   \hat E(z + \Delta z) &= e\,(\hat E + S_0/6) + e_2\,(S_1 + S_2)/3 + S_3/6,
+
+where :math:`S_0` is evaluated at :math:`\hat E(z)` and :math:`S_k` at :math:`\hat E_k`.
+Each step evaluates the sources four times (twice for "direct").  With ionization, the ionization
+loss damps the stage fields as well (by half a step for :math:`E_1` and :math:`E_2`, a full
+step for :math:`E_3`), and the loss stays 1st order.
+
 Choosing the step size
 ----------------------
 
@@ -80,7 +97,11 @@ Because the linear part is exact, :math:`\Delta z` is limited only by the source
   of a radian or less near a collapse);
 * the plasma phase per step, :math:`\gamma = \Delta z\, \omega_p^2 / (2 c^2 k_z)`, must stay
   below about 1 at every frequency that is kept.  This is the binding limit for THz and other
-  low frequencies in a dense plasma (see :ref:`Stability <sec-filter-stability>`).
+  low frequencies in a dense plasma (see :ref:`Stability <sec-filter-stability>`).  The
+  "rk4" solver is stable up to :math:`\gamma \approx 2.8`; the "direct" step grows slowly
+  for any :math:`\gamma`.  Near and below the plasma frequency (:math:`\omega \lesssim \omega_p`)
+  the plasma is not a perturbation and both become unstable unless :math:`\Delta z` is small
+  or these frequencies are filtered (:code:`filt_omega_grid_min`).
 
 In practice, halve :math:`\Delta z` and check that the quantities of interest do not change.
 

@@ -56,6 +56,12 @@ The tests are:
 * :code:`test_hhg_plasma.py` --- plasma dispersion of the harmonic field on the HHG grid: the
   3rd-harmonic phase-mismatch rate with and without ionization, compared with the driver's
   measured plasma phase, isolates the harmonic's own plasma shift (:math:`k_p/3`).
+* :code:`test_ionization_loss.py` --- energy balance (field energy lost vs. ionization energy
+  plus electron drift energy) for the ionization loss, with both solvers.
+* :code:`test_rk4.py` --- the RK4 solver: agreement with the direct solver for linear propagation, and
+  accuracy in :math:`\Delta z` compared with the direct solver (2nd order) against a fine-step reference,
+  with Kerr only and with Kerr and ionization (where the split-step ionization loss limits both
+  solvers to about 1st order).
 
 Updating the reference values
 -----------------------------

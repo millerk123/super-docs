@@ -7,6 +7,7 @@ This documentation is for the section :code:`laser` in the main :doc:`input file
 * :code:`ionization`, logical, default = false
 * :code:`compute_density`, logical, default = true
 * :code:`heun_predictor`, logical, default = false
+* :code:`solver`, character, default = "direct"
 * Filters (see :ref:`Filters <sec-filters>`)
 
 	* :code:`filt_t_size_left`, real, default = 0.1
@@ -60,7 +61,18 @@ This documentation is for the section :code:`laser` in the main :doc:`input file
 
 :code:`compute_density` --- Whether to compute the plasma density for the diagnostics even when :code:`ionization` is false.
 
-:code:`heun_predictor` --- Which weight to use for the source terms in the predictor stage of the step.  The default (false) uses :math:`C\,(1 + e^{i k_L \Delta z})`, which assumes that the source moves with the frame (true for harmonics and THz driven by the pulse).  For a term that acts on the field itself (plasma dispersion, self-phase modulation) in a mode whose phase advances a lot per step (:math:`|k_L \Delta z| \gtrsim 1`, e.g. high angles), this makes the step grow by up to :math:`\gamma^2` per step instead of :math:`\gamma^4/4`, where :math:`\gamma = \Delta z\, \omega_p^2 / (2 c^2 k_z)`.  Setting this to true uses :math:`2 C e^{i k_L \Delta z}` (the integrating-factor Heun method), which keeps the growth at :math:`\gamma^4/4` for every mode.  It also applies to the plasma term on the HHG grid, which only has a single (predictor) stage: there the default grows by up to :math:`\gamma` per step and the Heun form by :math:`\gamma^2`.  See :ref:`Stability <sec-filter-stability>`.
+:code:`heun_predictor` --- Which weight to use for the source terms in the predictor stage of the step.  The default (false) uses :math:`C\,(1 + e^{i k_L \Delta z})`, which assumes that the source moves with the frame (true for harmonics and THz driven by the pulse).  For a term that acts on the field itself (plasma dispersion, self-phase modulation) in a mode whose phase advances a lot per step (:math:`|k_L \Delta z| \gtrsim 1`, e.g. high angles), this makes the step grow by up to :math:`\gamma^2` per step instead of :math:`\gamma^4/4`, where :math:`\gamma = \Delta z\, \omega_p^2 / (2 c^2 k_z)`.  Setting this to true uses :math:`2 C e^{i k_L \Delta z}` (the integrating-factor Heun method), which keeps the growth at :math:`\gamma^4/4` for every mode.  It also applies to the plasma term on the HHG grid, which only has a single (predictor) stage: there the default grows by up to :math:`\gamma` per step and the Heun form by :math:`\gamma^2`.  See :ref:`Stability <sec-filter-stability>`.  Only used by the "direct" solver (and on the HHG grid).
+
+:code:`solver` --- The integrator in :math:`z` for the main grid (see :doc:`../uppe`).
+
+* "direct" (or "rk2"): the integrating-factor predictor--corrector step (2nd order in :math:`\Delta z`).
+* "rk4": the integrating-factor (Lawson) 4th-order Runge--Kutta step.  It costs about twice as much per step (four source evaluations instead of two), is 4th order in :math:`\Delta z` apart from the ionization loss (applied as a split step, see :ref:`ionization loss <sec-ionization-loss>`), and is stable for a larger plasma phase per step.  On a THz test (a two-color flying focus in argon), the two solvers gave the same THz at the same :math:`\Delta z` (to 0.1%), and RK4 was unstable at twice the step, so "direct" is the better choice there.
+
+.. _sec-ionization-loss:
+
+Ionization loss (with :code:`ionization`; see :doc:`../uppe`) --- the ionization-loss current :math:`J_i = U_I\,(\partial_t n_e)/\mathcal{E}` is applied as a damping of the physical field: :math:`\mathrm{Re}\,E` is multiplied by :math:`\exp[-U_I W n_n \Delta z / (2 \epsilon_0 c\, \mathcal{E}^2)]` (the paraxial UPPE coefficient) after each step (and in the predictor or stages), and the complex field is rebuilt from it.  This is energy-consistent and costs one extra transform per step, but is a separate split step (1st order in :math:`\Delta z` for the loss).
+
+Earlier versions multiplied the complex field by :math:`\exp[-U_I W n_n \Delta z / (\epsilon_0 c\, \mathcal{E}^2)]`, an envelope coefficient used with the instantaneous field.  That loss was too strong by a factor between 1 and 2 that depends on how sharply the ionization peaks within each cycle: about 4--20% at the fundamental for argon between :math:`3\times10^{13}` and :math:`10^{15}` W/cm\ :sup:`2`, and 2 for slowly varying fields such as THz.
 
 .. _sec-filters:
 
@@ -74,7 +86,7 @@ There are two kinds of filters:
 
 All roll-offs have a :math:`\cos^2` shape.  At points beyond the hard limits (evanescent waves, angle :math:`\ge` :code:`filt_angle_max`, :math:`\omega \le` :code:`filt_omega_grid_min` :math:`\omega_\mathrm{grid}`, :math:`\omega \ge` :code:`filt_omega_high_max` :math:`\omega_\mathrm{max}`, :math:`k_\perp \ge` :code:`filt_k_high_max` :math:`k_\mathrm{max}`), propagation and all sources are also zeroed in every step.  Negative frequencies are always excluded.
 
-Each step is a predictor--corrector (RK2-like) step.  The filters are only applied to the corrected field: the spectral filter is applied to the field at :math:`z + \Delta z` (on steps where ``mod(iz, nz_filt_omega) == 0``), then the field is transformed to real space, the edge filter is applied (on steps where ``mod(iz, nz_filt_t) == 0``) and finally the ionization loss.  The predicted field is not filtered.
+The filters are only applied to the new field at the end of each step (the predictor of the "direct" solver and the intermediate stages of "rk4" are not filtered): the spectral filter is applied to the field at :math:`z + \Delta z` (on steps where ``mod(iz, nz_filt_omega) == 0``), then the field is transformed to real space, the edge filter is applied (on steps where ``mod(iz, nz_filt_t) == 0``) and finally the ionization loss (with :code:`ionization`).
 
 :code:`filt_t_size_left` --- The fraction of the total :math:`t` grid over which the field is tapered to zero (with :math:`\cos^2`) at the left edge.  For example, 0.1 for both :code:`filt_t_size_left` and :code:`filt_t_size_right` leaves the middle 80% of the time grid untouched.  The same time filter is applied to the initial pulse.
 
